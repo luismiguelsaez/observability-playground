@@ -5,6 +5,10 @@
 brew install jsonnet-bundler
 ```
 
+# Docs
+
+- https://grafana.github.io/grafonnet-lib
+
 # Test
 
 ```bash
