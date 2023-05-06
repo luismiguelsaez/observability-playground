@@ -28,19 +28,6 @@ local jvm_memory = bargauge.new(
                         }
                       };
 
-local node_cpu_usage = graph.new(
-                        'CPU usage',
-                        datasource='Prometheus'
-                      )
-                      .addTarget(
-                        prometheus.target(
-                          'sum by (name,role) (rate(node_cpu_seconds_total{env="$env",mode!="idle",name=~"$node"}[5m]))
-                          /
-                          count by (name,role) (sum by (name,role,cpu) (node_cpu_seconds_total{env="$env",name=~"$node"})) * 100',
-                          legendFormat='{{ role }}',
-                        )
-                      );
-
 local jvm_memory_area_heap = graph.new(
                         'JVM Memory Area (Heap)',
                         datasource='Prometheus',
@@ -365,11 +352,10 @@ dashboard.new(
     regex='/^(.*)-rollout-.*/'
   )
 )
-.addPanel( node_cpu_usage, gridPos={ x: 0, y: 0, w: 24, h: 8, } )
-.addPanel( jvm_memory, gridPos={ x: 0, y: 0, w: 24, h: 8, } )
-.addPanel( jvm_memory_area_heap, gridPos={ x: 0, y: 0, w: 12, h: 8, } )
+.addPanel( jvm_memory,               gridPos={ x: 0, y: 0, w: 24, h: 8, } )
+.addPanel( jvm_memory_area_heap,     gridPos={ x: 0, y: 0, w: 12, h: 8, } )
 .addPanel( jvm_memory_area_non_heap, gridPos={ x: 12, y: 0, w: 12, h: 8, } )
-.addPanel( jvm_threads_used, gridPos={ x: 0, y: 0, w: 6, h: 8, } )
-.addPanel( jvm_class_loading, gridPos={ x: 6, y: 0, w: 6, h: 8, } )
-.addPanel( jvm_gc_time, gridPos={ x: 12, y: 0, w: 6, h: 8, } )
-.addPanel( jvm_gc_count, gridPos={ x: 18, y: 0, w: 6, h: 8, } )
+.addPanel( jvm_threads_used,         gridPos={ x: 0, y: 0, w: 6, h: 8, } )
+.addPanel( jvm_class_loading,        gridPos={ x: 6, y: 0, w: 6, h: 8, } )
+.addPanel( jvm_gc_time,              gridPos={ x: 12, y: 0, w: 6, h: 8, } )
+.addPanel( jvm_gc_count,             gridPos={ x: 18, y: 0, w: 6, h: 8, } )
