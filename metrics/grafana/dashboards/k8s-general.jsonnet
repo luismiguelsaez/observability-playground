@@ -151,16 +151,35 @@ local jvm_memory_area_heap = graph.new(
                             },
                           ]
                       )
-                      + { type: "timeseries", fieldConfig+: { defaults+: { unit: "bytes" } } };
+                      .addOverride(
+                          matcher={ id: "byName", options: "Usage %" },
+                          properties=[
+                            {
+                              "id": "custom.lineWidth",
+                              "value": 0
+                            },
+                          ]
+                      )
+                      + { type: "timeseries",
+                          fieldConfig+: { defaults+: { unit: "bytes" } },
+                          options+: {
+                            legend+: {
+                              displayMode: "table",
+                              showLegend: true,
+                              placement: "bottom",
+                              calcs: [
+                                "mean",
+                                "lastNotNull",
+                                "max",
+                                "min"
+                              ]
+                            }
+                          }
+                        };
 
 local jvm_memory_area_non_heap = graph.new(
                         'JVM Memory Area (Non-Heap)',
                         datasource='Prometheus',
-                        legend_alignAsTable=true,
-                        legend_avg=true,
-                        legend_max=true,
-                        legend_min=true,
-                        legend_values=true
                       )
                       .addTarget(
                         prometheus.target(
@@ -173,7 +192,149 @@ local jvm_memory_area_non_heap = graph.new(
                           expr='avg(java_lang_Memory_NonHeapMemoryUsage_committed{pod=~"languagetool-.*"})',
                           legendFormat='Committed'
                         )
-                      );
+                      )
+                      + { type: "timeseries",
+                          fieldConfig+: { defaults+: { unit: "bytes", custom+: { fillOpacity: 10 } } },
+                          options+: {
+                            legend+: {
+                              displayMode: "table",
+                              showLegend: true,
+                              placement: "bottom",
+                              calcs: [
+                                "mean",
+                                "lastNotNull",
+                                "max",
+                                "min"
+                              ]
+                            }
+                          }
+                        };
+
+local jvm_threads_used = graph.new(
+                        'JVM Threads used',
+                        datasource='Prometheus',
+                      )
+                      .addTarget(
+                        prometheus.target(
+                          expr='avg(java_lang_Threading_ThreadCount{pod=~"languagetool-.*"})',
+                          legendFormat='Current'
+                        )
+                      )
+                      .addTarget(
+                        prometheus.target(
+                          expr='avg(java_lang_Threading_DaemonThreadCount{pod=~"languagetool-.*"})',
+                          legendFormat='Daemon'
+                        )
+                      )
+                      .addTarget(
+                        prometheus.target(
+                          expr='avg(java_lang_Threading_PeakThreadCount{pod=~"languagetool-.*"})',
+                          legendFormat='Peak'
+                        )
+                      )
+                      + { type: "timeseries",
+                            fieldConfig+: { defaults+: { custom+: { fillOpacity: 10 } } },
+                            options+: {
+                              legend+: {
+                                displayMode: "table",
+                                showLegend: true,
+                                placement: "bottom",
+                                calcs: [
+                                  "mean",
+                                  "lastNotNull",
+                                  "max",
+                                  "min"
+                                ]
+                              }
+                            }
+                          };
+
+local jvm_class_loading = graph.new(
+                        'JVM Class Loading',
+                        datasource='Prometheus',
+                      )
+                      .addTarget(
+                        prometheus.target(
+                          expr='avg(java_lang_ClassLoading_LoadedClassCount{pod=~"languagetool-.*"})',
+                          legendFormat='Loaded'
+                        )
+                      )
+                      .addTarget(
+                        prometheus.target(
+                          expr='avg(java_lang_ClassLoading_TotalLoadedClassCount{pod=~"languagetool-.*"})',
+                          legendFormat='Total'
+                        )
+                      )
+                      + { type: "timeseries",
+                            fieldConfig+: { defaults+: { unit: "bytes", custom+: { fillOpacity: 10 } } },
+                            options+: {
+                              legend+: {
+                                displayMode: "table",
+                                showLegend: true,
+                                placement: "bottom",
+                                calcs: [
+                                  "mean",
+                                  "lastNotNull",
+                                  "max",
+                                  "min"
+                                ]
+                              }
+                            }
+                          };
+
+local jvm_gc_time = graph.new(
+                        'JVM GC Time [3m]',
+                        datasource='Prometheus',
+                      )
+                      .addTarget(
+                        prometheus.target(
+                          expr='avg(rate(java_lang_G1_Young_Generation_LastGcInfo_duration{pod=~"languagetool-.*"}[3m]))',
+                          legendFormat='Time'
+                        )
+                      )
+                      + { type: "timeseries",
+                            fieldConfig+: { defaults+: { unit: "s", custom+: { fillOpacity: 10 } } },
+                            options+: {
+                              legend+: {
+                                displayMode: "table",
+                                showLegend: true,
+                                placement: "bottom",
+                                calcs: [
+                                  "mean",
+                                  "lastNotNull",
+                                  "max",
+                                  "min"
+                                ]
+                              }
+                            }
+                          };
+
+local jvm_gc_count = graph.new(
+                        'JVM GC Count Increase [3m]',
+                        datasource='Prometheus',
+                      )
+                      .addTarget(
+                        prometheus.target(
+                          expr='avg(increase(java_lang_G1_Young_Generation_LastGcInfo_duration{pod=~"languagetool-.*"}[3m]))',
+                          legendFormat='Count'
+                        )
+                      )
+                      + { type: "timeseries",
+                            fieldConfig+: { defaults+: { custom+: { fillOpacity: 10 } } },
+                            options+: {
+                              legend+: {
+                                displayMode: "table",
+                                showLegend: true,
+                                placement: "bottom",
+                                calcs: [
+                                  "mean",
+                                  "lastNotNull",
+                                  "max",
+                                  "min"
+                                ]
+                              }
+                            }
+                          };
 
 dashboard.new(
   title = "K8s node resources",
@@ -204,3 +365,7 @@ dashboard.new(
 .addPanel( jvm_memory, gridPos={ x: 0, y: 0, w: 24, h: 8, } )
 .addPanel( jvm_memory_area_heap, gridPos={ x: 0, y: 0, w: 12, h: 8, } )
 .addPanel( jvm_memory_area_non_heap, gridPos={ x: 12, y: 0, w: 12, h: 8, } )
+.addPanel( jvm_threads_used, gridPos={ x: 0, y: 0, w: 6, h: 8, } )
+.addPanel( jvm_class_loading, gridPos={ x: 6, y: 0, w: 6, h: 8, } )
+.addPanel( jvm_gc_time, gridPos={ x: 12, y: 0, w: 6, h: 8, } )
+.addPanel( jvm_gc_count, gridPos={ x: 18, y: 0, w: 6, h: 8, } )
