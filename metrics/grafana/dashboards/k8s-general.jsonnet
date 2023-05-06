@@ -76,11 +76,6 @@ local jvm_memory_area_heap = graph.new(
                         )
                       )
                       .addSeriesOverride({})
-                      .addYaxis(
-                        format='percentunit',
-                        min='0',
-                        max='1'
-                      )
                       .addOverride(
                           matcher={ id: "byName", options: "Usage %" },
                           properties=[
@@ -156,7 +151,7 @@ local jvm_memory_area_heap = graph.new(
                             },
                           ]
                       )
-                      + { type: "timeseries", fieldConfig+: { defaults+: { unit: "bytes" }}};
+                      + { type: "timeseries", fieldConfig+: { defaults+: { unit: "bytes" } } };
 
 local jvm_memory_area_non_heap = graph.new(
                         'JVM Memory Area (Non-Heap)',
