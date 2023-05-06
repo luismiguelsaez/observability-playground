@@ -242,64 +242,64 @@ local jvm_threads_used = graph.new(
                           };
 
 local jvm_class_loading = graph.new(
-                        'JVM Class Loading',
-                        datasource='Prometheus',
-                      )
-                      .addTarget(
-                        prometheus.target(
-                          expr='avg(java_lang_ClassLoading_LoadedClassCount{pod=~"%s-.*"})' % [serviceName],
-                          legendFormat='Loaded'
-                        )
-                      )
-                      .addTarget(
-                        prometheus.target(
-                          expr='avg(java_lang_ClassLoading_TotalLoadedClassCount{pod=~"%s-.*"})' % [serviceName],
-                          legendFormat='Total'
-                        )
-                      )
-                      + { type: "timeseries",
-                            fieldConfig+: { defaults+: { unit: "bytes", custom+: { fillOpacity: 10 } } },
-                            options+: {
-                              legend+: {
-                                displayMode: "table",
-                                showLegend: true,
-                                placement: "bottom",
-                                calcs: [
-                                  "mean",
-                                  "lastNotNull",
-                                  "max",
-                                  "min"
-                                ]
-                              }
-                            }
-                          };
+                            'JVM Class Loading',
+                            datasource='Prometheus',
+                          )
+                          .addTarget(
+                            prometheus.target(
+                              expr='avg(java_lang_ClassLoading_LoadedClassCount{pod=~"%s-.*"})' % [serviceName],
+                              legendFormat='Loaded'
+                            )
+                          )
+                          .addTarget(
+                            prometheus.target(
+                              expr='avg(java_lang_ClassLoading_TotalLoadedClassCount{pod=~"%s-.*"})' % [serviceName],
+                              legendFormat='Total'
+                            )
+                          )
+                          + { type: "timeseries",
+                                fieldConfig+: { defaults+: { unit: "bytes", custom+: { fillOpacity: 10 } } },
+                                options+: {
+                                  legend+: {
+                                    displayMode: "table",
+                                    showLegend: true,
+                                    placement: "bottom",
+                                    calcs: [
+                                      "mean",
+                                      "lastNotNull",
+                                      "max",
+                                      "min"
+                                    ]
+                                  }
+                                }
+                              };
 
 local jvm_gc_time = graph.new(
                         'JVM GC Time [3m]',
                         datasource='Prometheus',
+                    )
+                    .addTarget(
+                      prometheus.target(
+                        expr='avg(rate(java_lang_G1_Young_Generation_LastGcInfo_duration{pod=~"%s-.*"}[3m]))' % [serviceName],
+                        legendFormat='Time'
                       )
-                      .addTarget(
-                        prometheus.target(
-                          expr='avg(rate(java_lang_G1_Young_Generation_LastGcInfo_duration{pod=~"%s-.*"}[3m]))' % [serviceName],
-                          legendFormat='Time'
-                        )
-                      )
-                      + { type: "timeseries",
-                            fieldConfig+: { defaults+: { unit: "s", custom+: { fillOpacity: 10 } } },
-                            options+: {
-                              legend+: {
-                                displayMode: "table",
-                                showLegend: true,
-                                placement: "bottom",
-                                calcs: [
-                                  "mean",
-                                  "lastNotNull",
-                                  "max",
-                                  "min"
-                                ]
-                              }
+                    )
+                    + { type: "timeseries",
+                          fieldConfig+: { defaults+: { unit: "s", custom+: { fillOpacity: 10 } } },
+                          options+: {
+                            legend+: {
+                              displayMode: "table",
+                              showLegend: true,
+                              placement: "bottom",
+                              calcs: [
+                                "mean",
+                                "lastNotNull",
+                                "max",
+                                "min"
+                              ]
                             }
-                          };
+                          }
+                        };
 
 local jvm_gc_count = graph.new(
                         'JVM GC Count Increase [3m]',
