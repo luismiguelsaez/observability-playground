@@ -18,10 +18,13 @@ local jvm_memory = bargauge.new(
                         expr='avg by (__name__) ({__name__=~"java_lang_.*Usage_used",__name__!~".*Peak.*",pod=~"languagetool-.*"})',
                         legendFormat='{{ __name__ }}'
                       )
-                    ) + { options+: {
-                      orientation: "horizontal",
-                      displayMode: "lcd",
-                    }};
+                    )
+                    + {
+                        options+: {
+                          orientation: "horizontal",
+                          displayMode: "lcd",
+                        }
+                      };
 
 local node_cpu_usage = graph.new(
                         'CPU usage',
