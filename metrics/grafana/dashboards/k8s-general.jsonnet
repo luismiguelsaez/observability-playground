@@ -359,11 +359,10 @@ dashboard.new(
 )
 .addTemplate(
   grafana.template.new(
-    'node',
+    'service',
     '$PROM_DEFAULT',
-    'label_values(kube_node_info{env="$env"}, exported_node)',
-    multi=true,
-    includeAll=true,
+    'label_values(kube_pod_container_info{container="jmx-exporter",env="$env"}, pod)',
+    regex='/^(.*)-rollout-.*/'
   )
 )
 .addPanel( node_cpu_usage, gridPos={ x: 0, y: 0, w: 24, h: 8, } )
