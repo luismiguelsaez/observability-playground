@@ -70,8 +70,25 @@ local jvm_memory_area_heap = graph.new(
                                   /
                                   java_lang_Memory_HeapMemoryUsage_max{pod=~"languagetool-.*"}
                                 )',
-                          legendFormat='Used %'
+                          legendFormat='Usage %'
                         )
+                      )
+                      .addSeriesOverride({})
+                      .addOverride(
+                          matcher={
+                                    id: "byName",
+                                    options: "Usage %"
+                                  },
+                          properties=[
+                                    {
+                                      id: "custom.drawStyle",
+                                      value: "bars"
+                                    },
+                                    {
+                                      id: "unit",
+                                      value: "percentunit"
+                                    },
+                                  ]
                       );
 
 local jvm_memory_area_non_heap = graph.new(
