@@ -43,7 +43,9 @@ local jvm_memory_area_heap = graph.new(
                         legend_avg=true,
                         legend_max=true,
                         legend_min=true,
-                        legend_values=true
+                        legend_values=true,
+                        formatY1='bytes',
+                        formatY2='percentunit',
                       )
                       .addTarget(
                         prometheus.target(
@@ -70,26 +72,91 @@ local jvm_memory_area_heap = graph.new(
                                   /
                                   java_lang_Memory_HeapMemoryUsage_max{pod=~"languagetool-.*"}
                                 )',
-                          legendFormat='Usage %'
+                          legendFormat='Usage %',
                         )
                       )
                       .addSeriesOverride({})
+                      .addYaxis(
+                        format='percentunit',
+                        min='0',
+                        max='1'
+                      )
                       .addOverride(
-                          matcher={
-                                    id: "byName",
-                                    options: "Usage %"
-                                  },
+                          matcher={ id: "byName", options: "Usage %" },
                           properties=[
-                                    {
-                                      id: "custom.drawStyle",
-                                      value: "bars"
-                                    },
-                                    {
-                                      id: "unit",
-                                      value: "percentunit"
-                                    },
-                                  ]
-                      );
+                            {
+                              "id": "custom.drawStyle",
+                              "value": "bars"
+                            },
+                          ]
+                      )
+                      .addOverride(
+                          matcher={ id: "byName", options: "Usage %" },
+                          properties=[
+                            {
+                              "id": "custom.fillOpacity",
+                              "value": 80
+                            },
+                          ]
+                      )
+                      .addOverride(
+                          matcher={ id: "byName", options: "Usage %" },
+                          properties=[
+                            {
+                              "id": "color",
+                              "value": {
+                                "fixedColor": "#6d1f62",
+                                "mode": "fixed"
+                              }
+                            },
+                          ]
+                      )
+                      .addOverride(
+                          matcher={ id: "byName", options: "Usage %" },
+                          properties=[
+                            {
+                              "id": "custom.axisPlacement",
+                              "value": "right"
+                            },
+                          ]
+                      ) 
+                      .addOverride(
+                          matcher={ id: "byName", options: "Usage %" },
+                          properties=[
+                            {
+                              "id": "unit",
+                              "value": "percentunit"
+                            },
+                          ]
+                      )
+                      .addOverride(
+                          matcher={ id: "byName", options: "Usage %" },
+                          properties=[
+                            {
+                              "id": "decimals",
+                              "value": 1
+                            },
+                          ]
+                      ) 
+                      .addOverride(
+                          matcher={ id: "byName", options: "Usage %" },
+                          properties=[
+                            {
+                              "id": "min",
+                              "value": 0
+                            },
+                          ]
+                      ) 
+                      .addOverride(
+                          matcher={ id: "byName", options: "Usage %" },
+                          properties=[
+                            {
+                              "id": "max",
+                              "value": 1
+                            },
+                          ]
+                      )
+                      + { type: "timeseries", fieldConfig+: { defaults+: { unit: "bytes" }}};
 
 local jvm_memory_area_non_heap = graph.new(
                         'JVM Memory Area (Non-Heap)',
