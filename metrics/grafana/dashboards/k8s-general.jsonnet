@@ -8,6 +8,8 @@ local heatmap = grafana.heatmapPanel;
 local bargauge = grafana.barGaugePanel;
 local prometheus = grafana.prometheus;
 
+local serviceName = 'languagetool';
+
 local jvm_memory = bargauge.new(
                       'JVM memory distribution',
                       datasource='Prometheus',
@@ -15,7 +17,7 @@ local jvm_memory = bargauge.new(
                     )
                     .addTarget(
                       prometheus.target(
-                        expr='avg by (__name__) ({__name__=~"java_lang_.*Usage_used",__name__!~".*Peak.*",pod=~"languagetool-.*"})',
+                        expr='avg by (__name__) ({__name__=~"java_lang_.*Usage_used",__name__!~".*Peak.*",pod=~"%s-.*"})' % [serviceName],
                         legendFormat='{{ __name__ }}'
                       )
                     )
@@ -52,29 +54,29 @@ local jvm_memory_area_heap = graph.new(
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(java_lang_Memory_HeapMemoryUsage_used{pod=~"languagetool-.*"})',
+                          expr='avg(java_lang_Memory_HeapMemoryUsage_used{pod=~"%s-.*"})' % [serviceName],
                           legendFormat='Used',
                         )
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(java_lang_Memory_HeapMemoryUsage_committed{pod=~"languagetool-.*"})',
+                          expr='avg(java_lang_Memory_HeapMemoryUsage_committed{pod=~"%s-.*"})' % [serviceName],
                           legendFormat='Committed'
                         )
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(java_lang_Memory_HeapMemoryUsage_max{pod=~"languagetool-.*"})',
+                          expr='avg(java_lang_Memory_HeapMemoryUsage_max{pod=~"%s-.*"})' % [serviceName],
                           legendFormat='Max'
                         )
                       )
                       .addTarget(
                         prometheus.target(
                           expr='avg(
-                                  java_lang_Memory_HeapMemoryUsage_used{pod=~"languagetool-.*"}
+                                  java_lang_Memory_HeapMemoryUsage_used{pod=~"%s-.*"}
                                   /
-                                  java_lang_Memory_HeapMemoryUsage_max{pod=~"languagetool-.*"}
-                                )',
+                                  java_lang_Memory_HeapMemoryUsage_max{pod=~"%s-.*"}
+                                )' % [serviceName, serviceName],
                           legendFormat='Usage %',
                         )
                       )
@@ -186,13 +188,13 @@ local jvm_memory_area_non_heap = graph.new(
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(java_lang_Memory_NonHeapMemoryUsage_used{pod=~"languagetool-.*"})',
+                          expr='avg(java_lang_Memory_NonHeapMemoryUsage_used{pod=~"%s-.*"})' % [serviceName],
                           legendFormat='Used'
                         )
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(java_lang_Memory_NonHeapMemoryUsage_committed{pod=~"languagetool-.*"})',
+                          expr='avg(java_lang_Memory_NonHeapMemoryUsage_committed{pod=~"%s-.*"})' % [serviceName],
                           legendFormat='Committed'
                         )
                       )
@@ -219,19 +221,19 @@ local jvm_threads_used = graph.new(
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(java_lang_Threading_ThreadCount{pod=~"languagetool-.*"})',
+                          expr='avg(java_lang_Threading_ThreadCount{pod=~"%s-.*"})' % [serviceName],
                           legendFormat='Current'
                         )
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(java_lang_Threading_DaemonThreadCount{pod=~"languagetool-.*"})',
+                          expr='avg(java_lang_Threading_DaemonThreadCount{pod=~"%s-.*"})' % [serviceName],
                           legendFormat='Daemon'
                         )
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(java_lang_Threading_PeakThreadCount{pod=~"languagetool-.*"})',
+                          expr='avg(java_lang_Threading_PeakThreadCount{pod=~"%s-.*"})' % [serviceName],
                           legendFormat='Peak'
                         )
                       )
@@ -258,13 +260,13 @@ local jvm_class_loading = graph.new(
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(java_lang_ClassLoading_LoadedClassCount{pod=~"languagetool-.*"})',
+                          expr='avg(java_lang_ClassLoading_LoadedClassCount{pod=~"%s-.*"})' % [serviceName],
                           legendFormat='Loaded'
                         )
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(java_lang_ClassLoading_TotalLoadedClassCount{pod=~"languagetool-.*"})',
+                          expr='avg(java_lang_ClassLoading_TotalLoadedClassCount{pod=~"%s-.*"})' % [serviceName],
                           legendFormat='Total'
                         )
                       )
@@ -291,7 +293,7 @@ local jvm_gc_time = graph.new(
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(rate(java_lang_G1_Young_Generation_LastGcInfo_duration{pod=~"languagetool-.*"}[3m]))',
+                          expr='avg(rate(java_lang_G1_Young_Generation_LastGcInfo_duration{pod=~"%s-.*"}[3m]))' % [serviceName],
                           legendFormat='Time'
                         )
                       )
@@ -318,7 +320,7 @@ local jvm_gc_count = graph.new(
                       )
                       .addTarget(
                         prometheus.target(
-                          expr='avg(increase(java_lang_G1_Young_Generation_LastGcInfo_duration{pod=~"languagetool-.*"}[3m]))',
+                          expr='avg(increase(java_lang_G1_Young_Generation_LastGcInfo_duration{pod=~"%s-.*"}[3m]))' % [serviceName],
                           legendFormat='Count'
                         )
                       )
