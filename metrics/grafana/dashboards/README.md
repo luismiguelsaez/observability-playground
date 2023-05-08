@@ -21,3 +21,11 @@ curl -XPOST --user "admin:prom-operator" -H"Content-type:application/json" ${GRA
   "overwrite": true
 }'
 ```
+
+
+
+-> docker run -v $PWD/metrics/grafana/dashboards:/src --entrypoint=sh -it --rm -w /src grafana/jsonnet-build:4fd8fef
+```bash
+jb install
+jsonnet -J ./vendor jmx-exporter.jsonnet
+```

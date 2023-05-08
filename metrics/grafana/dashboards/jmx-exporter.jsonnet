@@ -10,6 +10,122 @@ local prometheus = grafana.prometheus;
 
 local serviceName = 'languagetool';
 
+# Custom panel from lib
+local custom_graph_panel = import 'graph_panel_2_y_axis.jsonnet';
+local cpanel = custom_graph_panel.new('JVM Memory Area (Heap)', description='', default_unit='bytes', datasource='Prometheus')
+                .addTarget(
+                  prometheus.target(
+                    expr='avg(java_lang_Memory_HeapMemoryUsage_used{pod=~"%s-.*"})' % [serviceName],
+                    legendFormat='Used',
+                  )
+                )
+                .addTarget(
+                  prometheus.target(
+                    expr='avg(java_lang_Memory_HeapMemoryUsage_committed{pod=~"%s-.*"})' % [serviceName],
+                    legendFormat='Committed'
+                  )
+                )
+                .addTarget(
+                  prometheus.target(
+                    expr='avg(java_lang_Memory_HeapMemoryUsage_max{pod=~"%s-.*"})' % [serviceName],
+                    legendFormat='Max'
+                  )
+                )
+                .addTarget(
+                  prometheus.target(
+                    expr='avg(
+                            java_lang_Memory_HeapMemoryUsage_used{pod=~"%s-.*"}
+                            /
+                            java_lang_Memory_HeapMemoryUsage_max{pod=~"%s-.*"}
+                          )' % [serviceName, serviceName],
+                    legendFormat='Usage %',
+                  )
+                )
+                .addOverride(
+                    matcher={ id: "byName", options: "Usage %" },
+                    properties=[
+                      {
+                        "id": "custom.drawStyle",
+                        "value": "bars"
+                      },
+                    ]
+                )
+                .addOverride(
+                    matcher={ id: "byName", options: "Usage %" },
+                    properties=[
+                      {
+                        "id": "custom.fillOpacity",
+                        "value": 60
+                      },
+                    ]
+                )
+                .addOverride(
+                    matcher={ id: "byName", options: "Usage %" },
+                    properties=[
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "#6d1f62",
+                          "mode": "fixed"
+                        }
+                      },
+                    ]
+                )
+                .addOverride(
+                    matcher={ id: "byName", options: "Usage %" },
+                    properties=[
+                      {
+                        "id": "custom.axisPlacement",
+                        "value": "right"
+                      },
+                    ]
+                ) 
+                .addOverride(
+                    matcher={ id: "byName", options: "Usage %" },
+                    properties=[
+                      {
+                        "id": "unit",
+                        "value": "percentunit"
+                      },
+                    ]
+                )
+                .addOverride(
+                    matcher={ id: "byName", options: "Usage %" },
+                    properties=[
+                      {
+                        "id": "decimals",
+                        "value": 1
+                      },
+                    ]
+                ) 
+                .addOverride(
+                    matcher={ id: "byName", options: "Usage %" },
+                    properties=[
+                      {
+                        "id": "min",
+                        "value": 0
+                      },
+                    ]
+                ) 
+                .addOverride(
+                    matcher={ id: "byName", options: "Usage %" },
+                    properties=[
+                      {
+                        "id": "max",
+                        "value": 1
+                      },
+                    ]
+                )
+                .addOverride(
+                    matcher={ id: "byName", options: "Usage %" },
+                    properties=[
+                      {
+                        "id": "custom.lineWidth",
+                        "value": 0
+                      },
+                    ]
+                );
+
 local jvm_memory = bargauge.new(
                       'JVM memory distribution',
                       datasource='Prometheus',
@@ -92,7 +208,7 @@ local jvm_memory_area_heap = graph.new(
                           properties=[
                             {
                               "id": "custom.fillOpacity",
-                              "value": 80
+                              "value": 60
                             },
                           ]
                       )
@@ -363,7 +479,8 @@ dashboard.new(
   )
 )
 .addPanel( jvm_memory,               gridPos={ x: 0, y: 0, w: 24, h: 8, } )
-.addPanel( jvm_memory_area_heap,     gridPos={ x: 0, y: 0, w: 12, h: 8, } )
+//.addPanel( jvm_memory_area_heap,     gridPos={ x: 0, y: 0, w: 12, h: 8, } )
+.addPanel( cpanel,                   gridPos={ x: 0, y: 0, w: 12, h: 8, } )
 .addPanel( jvm_memory_area_non_heap, gridPos={ x: 12, y: 0, w: 12, h: 8, } )
 .addPanel( jvm_threads_used,         gridPos={ x: 0, y: 0, w: 6, h: 8, } )
 .addPanel( jvm_class_loading,        gridPos={ x: 6, y: 0, w: 6, h: 8, } )
