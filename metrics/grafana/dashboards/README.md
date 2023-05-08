@@ -15,7 +15,9 @@ brew install jsonnet-bundler
 git clone https://github.com/grafana/grafonnet-lib.git
 payload=$(docker run -v $PWD:/src bitnami/jsonnet:0.20.0 -J . /src/jmx-exporter.jsonnet)
 
-echo $payload | curl -XPOST --user "admin:prom-operator" -H"Content-type:application/json" ${GRAFANA_URL}/api/dashboards/db -d '
-
-'
+curl -XPOST --user "admin:prom-operator" -H"Content-type:application/json" ${GRAFANA_URL}/api/dashboards/db -d '
+{
+  "dashboard": '$payload',
+  "overwrite": true
+}'
 ```

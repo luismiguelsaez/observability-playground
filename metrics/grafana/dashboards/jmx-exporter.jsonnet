@@ -22,6 +22,16 @@ local jvm_memory = bargauge.new(
                       )
                     )
                     + {
+                        fieldConfig+: {
+                          defaults+: {
+                            thresholds+: {
+                              mode: "percentage",
+                              steps+: [
+                                { color: "green", value: null }
+                              ]
+                            }
+                          }
+                        },
                         options+: {
                           orientation: "horizontal",
                           displayMode: "lcd",
