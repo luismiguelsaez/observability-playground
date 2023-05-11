@@ -1,0 +1,37 @@
+---
+
+nodeSelector:
+  tier: monitoring
+
+server:
+  global:
+    # Required for Thanos sidecar and querier ( data deduplication )
+    external_labels:
+      env: test
+  # Prometheus basic config for Thanos: https://thanos.io/tip/components/sidecar.md/#example-basic-deployment
+  extraFlags:
+    - storage.tsdb.max-block-duration=2h
+    - storage.tsdb.min-block-duration=2h
+    - web.enable-lifecycle
+    - web.enable-admin-api
+  # Thanos sidecar basic config: https://thanos.io/tip/components/sidecar.md/#example-basic-deployment
+  sidecarContainers:
+    thanos:
+      image: bitnami/thanos:0.31.0
+      args:
+        - sidecar
+        - --tsdb.path
+        - /data
+        - --prometheus.url
+        - http://localhost:9090
+        - --http-address
+        - 0.0.0.0:19191
+        - --grpc-address
+        - 0.0.0.0:10901
+        #- --objstore.config-file
+        #- bucket.yml
+  service:
+    # Port of Thanos sidecar
+    gRPC:
+      enabled: true
+      servicePort: 10901

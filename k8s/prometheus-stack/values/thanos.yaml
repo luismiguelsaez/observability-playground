@@ -1,0 +1,16 @@
+---
+
+nodeSelector:
+  tier: storage
+
+query:
+  enabled: true
+  nodeSelector:
+    tier: storage
+  logLevel: info
+  logFormat: json
+  # Must match external_labels configured in Prometheus server
+  replicaLabel: [env]
+  stores:
+    # Thanos sidecar running as part of Prometheus server pod
+    - prometheus-server.monitoring.svc.cluster.local:10901
