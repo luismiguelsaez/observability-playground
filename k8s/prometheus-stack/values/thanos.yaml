@@ -3,8 +3,11 @@
 nodeSelector:
   tier: storage
 
+# https://thanos.io/v0.31/thanos/quick-tutorial.md/#querierquery
 query:
   enabled: true
+  recplicaCount: 3
+  podLabels: {}
   nodeSelector:
     tier: storage
   logLevel: info
@@ -14,3 +17,42 @@ query:
   stores:
     # Thanos sidecar running as part of Prometheus server pod
     - prometheus-server.monitoring.svc.cluster.local:10901
+
+queryFrontend:
+  enabled: true
+  recplicaCount: 1
+  podLabels: {}
+  nodeSelector:
+    tier: storage
+  logLevel: info
+  logFormat: json
+
+bucketweb:
+  enabled: false
+  recplicaCount: 1
+  podLabels: {}
+  nodeSelector:
+    tier: storage
+  logLevel: info
+  logFormat: json
+
+# https://thanos.io/v0.31/thanos/quick-tutorial.md/#compactor
+compactor:
+  enabled: false
+
+# https://thanos.io/v0.31/thanos/quick-tutorial.md/#store-gateway
+storegateway:
+  enabled: false
+
+# https://thanos.io/v0.31/thanos/quick-tutorial.md/#rulerrule
+ruler:
+  enabled: false
+
+receive:
+  enabled: false
+
+receiveDistributor:
+  enabled: false
+
+metrics:
+  enabled: false

@@ -10,7 +10,11 @@ datasources:
   datasources.yaml:
     apiVersion: 1
     datasources:
+    - name: ThanosQuery
+      type: prometheus
+      url: http://thanos-query.monitoring.svc.cluster.local:9090
+      isDefault: true
     - name: Prometheus
       type: prometheus
       url: http://prometheus-server.monitoring.svc.cluster.local
-      isDefault: true
+      isDefault: false
