@@ -28,8 +28,23 @@ server:
         - 0.0.0.0:19191
         - --grpc-address
         - 0.0.0.0:10901
-        #- --objstore.config-file
-        #- bucket.yml
+        - --objstore.config-file
+        - /config/bucket.yml
+      volumeMounts:
+        - mountPath: /config
+          name: bucket-s3
+        # Same as Prometheus data volume mount and specified in --tsdb.path arg in this container
+        - mountPath: /data
+          name: storage-volume
+      securityContext:
+        runAsNonRoot: true
+        # Same as Prometheus to be able to read data in /data path
+        runAsUser: 65534
+        runAsGroup: 65534
+  extraVolumes:
+    - configMap:
+        name: bucket-s3
+      name: bucket-s3
   service:
     # Port of Thanos sidecar
     gRPC:
