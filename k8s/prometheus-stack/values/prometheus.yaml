@@ -29,7 +29,7 @@ server:
         - --grpc-address
         - 0.0.0.0:10901
         - --objstore.config-file
-        - /config/bucket.yml
+        - /config/objstore.yml
       volumeMounts:
         - mountPath: /config
           name: bucket-s3
@@ -43,8 +43,8 @@ server:
         runAsGroup: 65534
   extraVolumes:
     - name: bucket-s3
-      configMap:
-        name: bucket-s3
+      secret:
+        secretName: bucket-s3
   service:
     # Port of Thanos sidecar
     gRPC:

@@ -18,7 +18,8 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 
 ```bash
 export AWS_PROFILE=<profile_name>
-aws s3api create-bucket --bucket thanos-test-202305120000 --region eu-central-1 --create-bucket-configuration LocationConstraint=eu-central-1
+export AWS_BUCKET=thanos-test-202305121754
+aws s3api create-bucket --bucket $AWS_BUCKET --region eu-central-1 --create-bucket-configuration LocationConstraint=eu-central-1
 ```
 
 - Create user and assign permissions
@@ -43,39 +44,39 @@ cat << EOF > /tmp/bucket-policy.json
           "s3:*"
       ],
       "Resource": [
-        "arn:aws:s3:::thanos-test-202305120000",
-        "arn:aws:s3:::thanos-test-202305120000/*"
+        "arn:aws:s3:::$AWS_BUCKET",
+        "arn:aws:s3:::$AWS_BUCKET/*"
       ]
     }
 	]
 }
 EOF
 
-aws s3api put-bucket-policy --bucket thanos-test-202305120000 --policy file:///tmp/bucket-policy.json 
+aws s3api put-bucket-policy --bucket $AWS_BUCKET --policy file:///tmp/bucket-policy.json 
 
 aws iam create-access-key --user-name thanos-test
 ```
 
-- Create `ConfigMap`
+- Create object store `Secret`
 
 ```bash
 cat << EOF | kubectl apply -f -
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
   name: bucket-s3
   namespace: monitoring
-data:
-  bucket.yml: |
+stringData:
+  objstore.yml: |
     type: S3
     prefix: standard-ia
     config:
       endpoint: s3.eu-central-1.amazonaws.com
       region: eu-central-1
-      bucket: thanos-test-202305120000
+      bucket: $AWS_BUCKET
       aws_sdk_auth: false
-      access_key:
-      secret_key:
+      access_key: 
+      secret_key: 
       put_user_metadata:
         X-Amz-Storage-Class: STANDARD_IA
       trace:
