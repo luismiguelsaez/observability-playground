@@ -41,8 +41,21 @@ compactor:
   enabled: false
 
 # https://thanos.io/v0.31/thanos/quick-tutorial.md/#store-gateway
+# https://thanos.io/tip/components/store.md/
 storegateway:
-  enabled: false
+  enabled: true
+  extraFlags:
+    - objstore.config-file=/config/bucket.yml
+    - http-address=0.0.0.0:19191
+    - grpc-address=0.0.0.0:10901
+  # Same as bucket config for Thanos sidecar
+  extraVolumes:
+    - name: bucket-s3
+      configMap:
+        name: bucket-s3
+  extraVolumeMounts:
+    - mountPath: /config
+      name: bucket-s3
 
 # https://thanos.io/v0.31/thanos/quick-tutorial.md/#rulerrule
 ruler:

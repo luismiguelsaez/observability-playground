@@ -42,9 +42,9 @@ server:
         runAsUser: 65534
         runAsGroup: 65534
   extraVolumes:
-    - configMap:
+    - name: bucket-s3
+      configMap:
         name: bucket-s3
-      name: bucket-s3
   service:
     # Port of Thanos sidecar
     gRPC:
