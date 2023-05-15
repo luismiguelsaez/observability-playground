@@ -10,8 +10,8 @@ server:
       env: test
   # Prometheus basic config for Thanos: https://thanos.io/tip/components/sidecar.md/#example-basic-deployment
   extraFlags:
-    - storage.tsdb.max-block-duration=2h
-    - storage.tsdb.min-block-duration=2h
+    - storage.tsdb.max-block-duration=5m
+    - storage.tsdb.min-block-duration=5m
     - web.enable-lifecycle
     - web.enable-admin-api
   # Thanos sidecar basic config: https://thanos.io/tip/components/sidecar.md/#example-basic-deployment
@@ -20,6 +20,8 @@ server:
       image: bitnami/thanos:0.31.0
       args:
         - sidecar
+        - --log.level=debug
+        - --log.format=logfmt
         - --tsdb.path
         - /data
         - --prometheus.url

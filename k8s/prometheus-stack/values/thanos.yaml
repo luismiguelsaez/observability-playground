@@ -17,8 +17,9 @@ query:
   # Must match external_labels configured in Prometheus server
   replicaLabel: [env]
   stores:
-    # Thanos sidecar running as part of Prometheus server pod
+    # Thanos sidecar gRPC port running as part of Prometheus server pod
     - prometheus-server.monitoring.svc.cluster.local:10901
+    # Storage GW gRPC port
     - thanos-storegateway.monitoring.svc.cluster.local:10901
 
 queryFrontend:

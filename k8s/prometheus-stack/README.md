@@ -18,7 +18,7 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 
 ```bash
 export AWS_PROFILE=<profile_name>
-export AWS_BUCKET=thanos-test-202305121754
+export AWS_BUCKET=thanos-test-20230513
 aws s3api create-bucket --bucket $AWS_BUCKET --region eu-central-1 --create-bucket-configuration LocationConstraint=eu-central-1
 ```
 
@@ -86,8 +86,8 @@ EOF
 
 - Deploy components
   ```bash
-  helm upgrade --install thanos oci://registry-1.docker.io/bitnamicharts/thanos --create-namespace -n monitoring --values values/thanos.yaml
   helm upgrade --install prometheus prometheus-community/prometheus --version 22.4.1 --create-namespace -n monitoring --values values/prometheus.yaml
+  helm upgrade --install thanos oci://registry-1.docker.io/bitnamicharts/thanos --create-namespace -n monitoring --values values/thanos.yaml
   helm upgrade --install grafana grafana/grafana -n monitoring --version 6.56.2 --create-namespace -n monitoring --values values/grafana.yaml
   ```
 
