@@ -60,6 +60,7 @@ compactor:
 # https://thanos.io/tip/components/store.md/
 storegateway:
   enabled: true
+  recplicaCount: 3
   podLabels: {}
   nodeSelector:
     tier: storage
@@ -88,7 +89,7 @@ ruler:
 
 receive:
   enabled: true
-  replicaCount: 1
+  replicaCount: 3
   podLabels: {}
   nodeSelector:
     tier: storage
