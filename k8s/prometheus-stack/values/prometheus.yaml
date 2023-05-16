@@ -8,6 +8,8 @@ server:
     # Required for Thanos sidecar and querier ( data deduplication )
     external_labels:
       env: test
+  remoteWrite:
+    - url: thanos-receive.monitoring.svc.cluster.local:19291
   # Prometheus basic config for Thanos: https://thanos.io/tip/components/sidecar.md/#example-basic-deployment
   extraFlags:
     - storage.tsdb.max-block-duration=5m
@@ -17,6 +19,7 @@ server:
   # Thanos sidecar basic config: https://thanos.io/tip/components/sidecar.md/#example-basic-deployment
   sidecarContainers:
     thanos:
+      #image: quay.io/thanos/thanos:v0.31.0
       image: bitnami/thanos:0.31.0
       args:
         - sidecar
@@ -32,6 +35,7 @@ server:
         - 0.0.0.0:10901
         - --objstore.config-file
         - /config/objstore.yml
+        #- "--objstore.config={type: S3, config: {bucket: prometheus-long-term}}"
       volumeMounts:
         - mountPath: /config
           name: bucket-s3

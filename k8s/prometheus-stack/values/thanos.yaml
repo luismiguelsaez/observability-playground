@@ -13,7 +13,17 @@ query:
   nodeSelector:
     tier: storage
   logLevel: info
-  logFormat: json
+  logFormat: logfmt
+  service:
+    type: ClusterIP
+    ports:
+      http: 9090
+    annotations: {}
+  serviceGrpc:
+    type: ClusterIP
+    ports:
+      grpc: 10901
+    annotations: {}
   # Must match external_labels configured in Prometheus server
   replicaLabel: [env]
   stores:
@@ -21,6 +31,8 @@ query:
     - prometheus-server.monitoring.svc.cluster.local:10901
     # Storage GW gRPC port
     - thanos-storegateway.monitoring.svc.cluster.local:10901
+    # Storage GW gRPC port
+    - thanos-receive.monitoring.svc.cluster.local:10901
 
 queryFrontend:
   enabled: true
@@ -29,10 +41,10 @@ queryFrontend:
   nodeSelector:
     tier: storage
   logLevel: info
-  logFormat: json
+  logFormat: logfmt
 
 bucketweb:
-  enabled: false
+  enabled: true
   recplicaCount: 1
   podLabels: {}
   nodeSelector:
@@ -42,15 +54,24 @@ bucketweb:
 
 # https://thanos.io/v0.31/thanos/quick-tutorial.md/#compactor
 compactor:
-  enabled: false
+  enabled: true
 
 # https://thanos.io/v0.31/thanos/quick-tutorial.md/#store-gateway
 # https://thanos.io/tip/components/store.md/
 storegateway:
   enabled: true
+  podLabels: {}
+  nodeSelector:
+    tier: storage
+  service:
+    type: ClusterIP
+    ports:
+      http: 9090
+      grpc: 10901
+    annotations: {}
   extraFlags: []
     #- objstore.config-file=/config/bucket.yml
-    #- http-address=0.0.0.0:19191
+    #- http-address=0.0.0.0:9090
     #- grpc-address=0.0.0.0:10901
   # Same as bucket config for Thanos sidecar
   #extraVolumes:
@@ -66,7 +87,25 @@ ruler:
   enabled: false
 
 receive:
-  enabled: false
+  enabled: true
+  replicaCount: 1
+  podLabels: {}
+  nodeSelector:
+    tier: storage
+  tsdbRetention: 15d
+  replicationFactor: 2
+  logLevel: info
+  logFormat: logfmt
+  service:
+    type: ClusterIP
+    ports:
+      http: 10902
+      grpc: 10901
+      # Configure Prometheus remoteWrite to connect to this port
+      remote: 19291
+    annotations: {}
+  # Must match external_labels configured in Prometheus server
+  replicaLabel: [env]
 
 receiveDistributor:
   enabled: false
