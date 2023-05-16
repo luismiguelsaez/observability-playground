@@ -12,15 +12,17 @@ server:
     - url: thanos-receive.monitoring.svc.cluster.local:19291
   # Prometheus basic config for Thanos: https://thanos.io/tip/components/sidecar.md/#example-basic-deployment
   extraFlags:
+    # Block duration set to 5m for testing purposes. For real environments, 2h is a good value
     - storage.tsdb.max-block-duration=5m
     - storage.tsdb.min-block-duration=5m
+    # Enable web components for the sidecar to connect
     - web.enable-lifecycle
     - web.enable-admin-api
   # Thanos sidecar basic config: https://thanos.io/tip/components/sidecar.md/#example-basic-deployment
   sidecarContainers:
     thanos:
-      #image: quay.io/thanos/thanos:v0.31.0
-      image: bitnami/thanos:0.31.0
+      image: quay.io/thanos/thanos:v0.31.0
+      #image: bitnami/thanos:0.31.0
       args:
         - sidecar
         - --log.level=debug
