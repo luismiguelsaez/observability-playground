@@ -1,13 +1,12 @@
 ---
 
-nodeSelector:
-  tier: monitoring
+nodeSelector: {}
 
 server:
   global:
     # Required for Thanos sidecar and querier ( data deduplication )
     external_labels:
-      env: test
+      replica: test
   remoteWrite:
     - url: thanos-receive.monitoring.svc.cluster.local:19291
   # Prometheus basic config for Thanos: https://thanos.io/tip/components/sidecar.md/#example-basic-deployment

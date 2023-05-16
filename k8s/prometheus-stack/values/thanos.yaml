@@ -10,8 +10,7 @@ query:
   enabled: true
   recplicaCount: 3
   podLabels: {}
-  nodeSelector:
-    tier: storage
+  nodeSelector: {}
   logLevel: info
   logFormat: logfmt
   service:
@@ -25,14 +24,14 @@ query:
       grpc: 10901
     annotations: {}
   # Must match external_labels configured in Prometheus server
-  replicaLabel: [env]
+  replicaLabel: [replica]
   stores:
     # Thanos sidecar gRPC port running as part of Prometheus server pod
-    - dns+_grpc._tcp.prometheus-server.monitoring.svc.cluster.local:10901
+    - prometheus-server.monitoring.svc.cluster.local:10901
     # Storage GW gRPC port
-    - dns+_grpc._tcp.thanos-storegateway.monitoring.svc.cluster.local:10901
+    - thanos-storegateway.monitoring.svc.cluster.local:10901
     # Storage GW gRPC port
-    - dns+_grpc._tcp.thanos-receive.monitoring.svc.cluster.local:10901
+    - thanos-receive.monitoring.svc.cluster.local:10901
   # https://github.com/thanos-io/thanos/blob/main/docs/service-discovery.md
   sdConfig: ""
 
@@ -40,8 +39,7 @@ queryFrontend:
   enabled: true
   recplicaCount: 1
   podLabels: {}
-  nodeSelector:
-    tier: storage
+  nodeSelector: {}
   logLevel: info
   logFormat: logfmt
 
@@ -49,8 +47,7 @@ bucketweb:
   enabled: true
   recplicaCount: 1
   podLabels: {}
-  nodeSelector:
-    tier: storage
+  nodeSelector: {}
   logLevel: info
   logFormat: json
 
@@ -64,8 +61,7 @@ storegateway:
   enabled: true
   recplicaCount: 3
   podLabels: {}
-  nodeSelector:
-    tier: storage
+  nodeSelector: {}
   service:
     type: ClusterIP
     ports:
@@ -93,11 +89,10 @@ receive:
   enabled: true
   replicaCount: 3
   podLabels: {}
-  nodeSelector:
-    tier: storage
+  nodeSelector: {}
   tsdbRetention: 15d
   replicationFactor: 2
-  logLevel: info
+  logLevel: debug
   logFormat: logfmt
   service:
     type: ClusterIP
@@ -108,7 +103,7 @@ receive:
       remote: 19291
     annotations: {}
   # Must match external_labels configured in Prometheus server
-  replicaLabel: [env]
+  replicaLabel: replica
 
 receiveDistributor:
   enabled: false
