@@ -87,7 +87,7 @@ EOF
 - Deploy components
   ```bash
   helm upgrade --install prometheus prometheus-community/prometheus --version 22.4.1 --create-namespace -n monitoring --values values/prometheus.yaml
-  helm upgrade --install thanos oci://registry-1.docker.io/bitnamicharts/thanos --create-namespace -n monitoring --values values/thanos.yaml
+  helm upgrade --install thanos oci://registry-1.docker.io/bitnamicharts/thanos --version 12.5.2 --create-namespace -n monitoring --values values/thanos.yaml
   helm upgrade --install grafana grafana/grafana -n monitoring --version 6.56.2 --create-namespace -n monitoring --values values/grafana.yaml
   ```
 
