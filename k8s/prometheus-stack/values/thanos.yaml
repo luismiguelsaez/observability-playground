@@ -28,11 +28,13 @@ query:
   replicaLabel: [env]
   stores:
     # Thanos sidecar gRPC port running as part of Prometheus server pod
-    - dnssrv+_grpc._tcp.prometheus-server.monitoring.svc.cluster.local:10901
+    - dns+_grpc._tcp.prometheus-server.monitoring.svc.cluster.local:10901
     # Storage GW gRPC port
-    - dnssrv+_grpc._tcp.thanos-storegateway.monitoring.svc.cluster.local:10901
+    - dns+_grpc._tcp.thanos-storegateway.monitoring.svc.cluster.local:10901
     # Storage GW gRPC port
-    - dnssrv+_grpc._tcp.thanos-receive.monitoring.svc.cluster.local:10901
+    - dns+_grpc._tcp.thanos-receive.monitoring.svc.cluster.local:10901
+  # https://github.com/thanos-io/thanos/blob/main/docs/service-discovery.md
+  sdConfig: ""
 
 queryFrontend:
   enabled: true

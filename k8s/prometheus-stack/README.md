@@ -1,4 +1,8 @@
 
+## Docs
+
+- https://github.com/thanos-io/thanos/blob/main/docs
+
 ## Cluster
 
 ```bash
